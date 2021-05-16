@@ -3,7 +3,8 @@
 import pymumble_py3 as pymumble
 from pymumble_py3 import callbacks as cbks
 import subprocess as sp
-import audioop, time
+import audioop
+import time
 import json
 import re
 
@@ -11,29 +12,31 @@ import re
 Main bot class
 Contains actions required to load the bot and control actions
 """
+
+
 class MumbleBot:
-	def __init__(self): # Defines configuration file
+	def __init__(self):  # Defines configuration file
 		with open("config.json") as f:
 			config = json.load(f)
-		
+
 		self.messages = Messages()
 		self.configurables = Configurables(config, self.messages)
 		self.callbacks = Callbacks(self)
 
 	def startBot(self):
 		self.mumble = pymumble.Mumble(
-			host	=	self.configurables.SERVER,
-			user	=	self.configurables.NICK,
-			port	=	self.configurables.PORT,
-			password=	self.configurables.PASSWD,
-			certfile=	self.configurables.CERTFILE,
-			keyfile	=	self.configurables.KEYFILE)
-		
+			host     = self.configurables.SERVER,
+			user     = self.configurables.NICK,
+			port     = self.configurables.PORT,
+			password = self.configurables.PASSWD,
+			certfile = self.configurables.CERTFILE,
+			keyfile	 = self.configurables.KEYFILE)
+
 		# Set MESSAGE_RECEIVED callback
 		self.mumble.callbacks.set_callback(
 			cbks.PYMUMBLE_CLBK_TEXTMESSAGERECEIVED,
 			self.callbacks.message_received)
-		
+
 		# Set DISCONNECT callback
 		self.mumble.callbacks.set_callback(
 			cbks.PYMUMBLE_CLBK_DISCONNECTED,
