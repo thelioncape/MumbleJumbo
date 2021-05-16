@@ -32,7 +32,7 @@ serverDied = False
 
 def setPlaybackSpeedMesage(playbackSpeed):
     global playbackSpeedMessage
-    playbackSpeedMessage = "<p>Playback speed: {0}x</p>".format(playbackSpeed)
+    playbackSpeedMessage = "<p>Playback speed: {0}x</p>".format(str(playbackSpeed))
 
 def cleanhtml(raw_html):
   cleanr = re.compile('<.*?>')
