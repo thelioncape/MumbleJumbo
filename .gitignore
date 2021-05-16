@@ -1,3 +1,5 @@
+# VSCode Exceptions
+.vscode/*
 # Certificates and config files
 *.pem
 config.json
