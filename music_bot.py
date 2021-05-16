@@ -16,6 +16,8 @@ port = config["port"]
 certfile = config["certfile"]
 keyfile = config["keyfile"]
 
+playbackspeed = 1 #Ensure input is sanitised if users are allowed to change this.
+
 playing = False
 skip = False
 with open("helpmessage.html") as f:
@@ -76,6 +78,14 @@ def message_received(text):
 			skip = True
 			time.sleep(1)
 			updateComment()
+		elif message.startswith("!speed"):
+			try:
+				if speedchange(message[7:]):
+					mumble.users[text.actor].send_text_message("Speed changed to " + str(message[7:]) + "x")
+				else:
+					mumble.users[text.actor].send_text_message("Please provide a speed between 0.5 and 2")
+			except:
+				mumble.users[text.actor].send_text_message("Please provide a speed between 0.5 and 2")
 
 
 def updateComment():
@@ -92,6 +102,18 @@ def updateComment():
 def died():
 	global serverDied
 	serverDied = True
+
+def speedchange(target):
+	try:
+		if float(target) <= 2 and float(target) >= 0.5:#Limits of the ffmpeg filter.
+			global playbackspeed
+			playbackspeed = target
+			return True
+		else:
+			return False
+	except:
+		print("[!] Invalid Speed Received.")
+		return False
 
 mumble = pymumble_py3.Mumble(server, nick, password=passwd, port=port, certfile=certfile, keyfile=keyfile)
 mumble.callbacks.set_callback(pymumble_py3.callbacks.PYMUMBLE_CLBK_TEXTMESSAGERECEIVED, message_received)
@@ -116,7 +138,7 @@ while True:
 		command = ["youtube-dl","-f","bestaudio", url, "--buffer-size", "2M", "-o", "-"]
 		wave_file = sp.Popen(command, stdout=sp.PIPE).stdout
 		# Convert and play wave file
-		command = ["ffmpeg", "-i", "-", "-acodec", "pcm_s16le", "-f", "s16le", "-ab", "192k", "-ac", "1", "-ar", "48000", "-fflags", "nobuffer",  "-"]
+		command = ["ffmpeg", "-i", "-", "-acodec", "pcm_s16le", "-f", "s16le", "-ab", "192k", "-ac", "1", "-ar", "48000", "-fflags", "nobuffer","-filter:a","atempo=" + str(float(playbackspeed)),  "-"]
 		sound = sp.Popen(command, stdout=sp.PIPE, stderr=sp.DEVNULL, stdin=wave_file, bufsize=1024)
 		print("playing")
 		playing = True
