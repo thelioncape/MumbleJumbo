@@ -113,7 +113,7 @@ while True:
             currentSongMessage += str(p.stdout.readline().decode('UTF-8').strip())
             currentSongMessage += "</p>"
 
-        command = ["youtube-dl", url, "--buffer-size", "2M", "-o", "-"]
+        command = ["youtube-dl","-f","bestaudio", url, "--buffer-size", "2M", "-o", "-"]
         wave_file = sp.Popen(command, stdout=sp.PIPE).stdout
         # Convert and play wave file
         command = ["ffmpeg", "-i", "-", "-acodec", "pcm_s16le", "-f", "s16le", "-ab", "192k", "-ac", "1", "-ar", "48000", "-fflags", "nobuffer",  "-"]
