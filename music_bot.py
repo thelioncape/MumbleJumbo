@@ -26,8 +26,13 @@ queueMessage = "<p>Current Queue</p>\
 	\n<p>No songs in queue</p>"
 currentSongMessage = "<p>Currently Playing:</p>\
 	\n<p>Nothing!</p>"
+playbackSpeedMessage = "<p>Playback speed: 1x</p>"
 queue = []
 serverDied = False
+
+def setPlaybackSpeedMesage(playbackSpeed):
+    global playbackSpeedMessage
+    playbackSpeedMessage = "<p>Playback speed: {0}x</p>".format(playbackSpeed)
 
 def cleanhtml(raw_html):
   cleanr = re.compile('<.*?>')
@@ -85,6 +90,8 @@ def updateComment():
 	comment += "<br />"
 	comment += queueMessage
 	comment += "<br />"
+    comment += playbackSpeedMessage
+    comment += "<br />"
 	comment += helpmessage
 
 	botUser.comment(comment)
