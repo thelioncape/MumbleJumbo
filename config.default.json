@@ -1,0 +1,9 @@
+{
+    "host": "",
+    "user": "",
+    "port": 64738,
+    "password": "",
+    "certfile": "",
+    "keyfile": "",
+    "reconnect": false
+}
