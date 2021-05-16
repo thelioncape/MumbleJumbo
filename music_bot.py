@@ -116,6 +116,7 @@ def speedchange(target):
 		if float(target) <= 2 and float(target) >= 0.5:#Limits of the ffmpeg filter.
 			global playbackspeed
 			playbackspeed = target
+			setPlaybackSpeedMesage(float(target))
 			return True
 		else:
 			return False
