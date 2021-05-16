@@ -33,9 +33,9 @@ queue = []
 serverDied = False
 
 def setPlaybackSpeedMesage(playbackSpeed):
-    global playbackSpeedMessage
-    playbackSpeedMessage = "<p>Playback speed: {0}x</p>".format(str(playbackSpeed))
-    updateComment()
+	global playbackSpeedMessage
+	playbackSpeedMessage = "<p>Playback speed: {0}x</p>".format(str(playbackSpeed))
+	updateComment()
 
 def cleanhtml(raw_html):
   cleanr = re.compile('<.*?>')
@@ -101,8 +101,8 @@ def updateComment():
 	comment += "<br />"
 	comment += queueMessage
 	comment += "<br />"
-    comment += playbackSpeedMessage
-    comment += "<br />"
+	comment += playbackSpeedMessage
+	comment += "<br />"
 	comment += helpmessage
 
 	botUser.comment(comment)
