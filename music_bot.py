@@ -197,7 +197,8 @@ class Callbacks:
 					else:
 						self.mumblebot.mumble.users[actor].send_text_message(
 							"Please provide a speed between 0.5 and 2")
-				except:
+				except Exception as e:
+					print(e)
 					self.mumblebot.mumble.users[actor].send_text_message(
 							"Please provide a speed between 0.5 and 2")
 
@@ -283,9 +284,9 @@ class Messages:
 
 	# Sets the playback speed message based on the
 	# Configurables object passed to it
-	def setPlaybackSpeedMessage(self, Configurables): 
+	def setPlaybackSpeedMessage(self, target): 
 		self.playbackSpeedMessage = "<p>Playback speed: {0}x</p>".format(
-				str(Configurables.playbackSpeed))
+				str(target))
 
 bot_instance = MumbleBot()
 bot_instance.startBot()
