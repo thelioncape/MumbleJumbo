@@ -85,7 +85,7 @@ class MumbleBot:
 					self.messages.currentSongMessage += str(
 						p.stdout.readline().decode('UTF-8').strip())
 					self.messages.currentSongMessage += "</p>"
-				
+
 				# Begin downloading video to stdout pipe to wave_file
 				command = 	["youtube-dl",
 							"-f", "bestaudio",
@@ -109,7 +109,7 @@ class MumbleBot:
 								stdout=sp.PIPE,
 								stderr=sp.DEVNULL,
 								stdin=wave_file, bufsize=1024)
-				
+
 				print("Playing")
 				self.configurables.playing = True
 				self.updateComment()
@@ -129,7 +129,7 @@ class MumbleBot:
 				# Wait for Mumble to output sound buffer to server
 				while self.mumble.sound_output.get_buffer_size() > 0.5:
 					time.sleep(0.01)
-				
+
 				# Song finished
 				self.configurables.playing = False
 				self.currentSongMessage = (
@@ -139,9 +139,9 @@ class MumbleBot:
 			time.sleep(2)
 			if self.configurables.serverDied:
 				exit()
-				
 
-			
+
+
 
 class Callbacks:
 	def __init__(self, mumblebot):
@@ -233,7 +233,7 @@ class Configurables:
 		for song in self.queue:
 			command = ["youtube-dl", "-e", song] # Get title only
 			# Runs above command and directs stdout to a pipe
-			with sp.Popen(command, stdout=sp.PIPE) as p: 
+			with sp.Popen(command, stdout=sp.PIPE) as p:
 				# Reads title from stdout and decodes into a usable string
 				title = str(p.stdout.readline().decode('UTF-8').strip())
 			titles.append(title)
@@ -261,7 +261,7 @@ class Configurables:
 			return True
 		else:
 			return False
-				
+
 
 """
 Class containing all messages that may be sent/set by the bot
@@ -284,7 +284,7 @@ class Messages:
 
 	# Sets the playback speed message based on the
 	# Configurables object passed to it
-	def setPlaybackSpeedMessage(self, target): 
+	def setPlaybackSpeedMessage(self, target):
 		self.playbackSpeedMessage = "<p>Playback speed: {0}x</p>".format(
 				str(target))
 
