@@ -7,6 +7,7 @@ import audioop
 import time
 import json
 import re
+import sys
 
 """
 Main bot class
@@ -115,9 +116,6 @@ class MumbleBot:
 				self.updateComment()
 				# Send audio bytes to Mumble sound queue and play
 				while True:
-					if self.configurables.skip: # Stop filling buffer if skip activated
-						self.configurables.skip = False
-						break
 					raw_music = sound.stdout.read(1024)
 					if not raw_music: # No more data -> buffer filled
 						break
@@ -138,8 +136,9 @@ class MumbleBot:
 			self.updateComment()
 			time.sleep(2)
 			if self.configurables.serverDied:
-				exit()
-
+				sys.exit(0)
+			if self.configurables.skip:
+				self.configurables.skip = False
 
 
 
@@ -175,7 +174,7 @@ class Callbacks:
 
 			elif message == "!yeet":
 				self.mumblebot.mumble.stop()
-				exit()
+				sys.exit(0)
 
 			elif message == "!clear":
 				self.conf.queue = []
