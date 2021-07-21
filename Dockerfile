@@ -9,9 +9,9 @@ RUN apk add --no-cache git less openssh && \
     pip install --no-cache-dir --upgrade pip virtualenv && \
     cd /app && \
     git init && \
-    git remote add origin https://github.com/thelioncape/MumbleJumbo.git
-    git fetch
-    git checkout -t origin/main
+    git remote add origin https://github.com/thelioncape/MumbleJumbo.git && \
+    git fetch && \
+    git checkout -t origin/main && \
     virtualenv /app && \
     bin/pip install --nocache-dir -r /app/requirements.txt && \
     apk --purge del .build-deps && \
