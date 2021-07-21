@@ -218,7 +218,8 @@ class Configurables:
 		self.PORT = config["port"]
 		self.CERTFILE = config["certfile"]
 		self.KEYFILE = config["keyfile"]
-		self.STEREO = config["stereo"]
+		#self.STEREO = config["stereo"]#ffmpeg command must be adjusted first.
+		self.STEREO = False
 
 		self.playbackSpeed = 1 # Sanitisation required
 		self.playing = False
