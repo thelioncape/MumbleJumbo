@@ -6,7 +6,7 @@ ADD config.json config.json
 ADD cert.pem cert.pem
 ADD key.pem key.pem
 RUN apk add --no-cache git less openssh && \
-    apk add --no-cache .build-deps g++ gcc musl-dev && \
+    apk add --no-cache g++ gcc musl-dev && \
     apk add --no-cache youtube-dl ffmpeg && \
     pip install --no-cache-dir --upgrade pip virtualenv && \
     cd /app && \
@@ -15,6 +15,6 @@ RUN apk add --no-cache git less openssh && \
     git fetch && \
     git checkout -t origin/main && \
     virtualenv /app && \
-    bin/pip install --nocache-dir -r /app/requirements.txt && \
+    /app/bin/pip install --nocache-dir -r /app/requirements.txt && \
     apk --purge del .build-deps && \
-    bin/python music_bot.py
+    /app/bin/python music_bot.py

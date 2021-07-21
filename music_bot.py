@@ -174,8 +174,8 @@ class Callbacks:
 				self.mumblebot.updateComment()
 
 			elif message == "!yeet":
-				self.mumblebot.mumble.stop()
 				sys.exit(0)
+				self.mumblebot.mumble.stop()
 
 			elif message == "!clear":
 				self.conf.queue = []
