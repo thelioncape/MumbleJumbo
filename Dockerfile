@@ -3,6 +3,8 @@ FROM alpine:latest
 USER root
 WORKDIR /app
 ADD config.json config.json
+ADD cert.pem cert.pem
+ADD key.pem key.pem
 RUN apk add --no-cache git less openssh && \
     apk add --no-cache .build-deps g++ gcc musl-dev && \
     apk add --no-cache youtube-dl ffmpeg && \
