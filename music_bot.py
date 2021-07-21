@@ -31,7 +31,8 @@ class MumbleBot:
 			port     = self.configurables.PORT,
 			password = self.configurables.PASSWD,
 			certfile = self.configurables.CERTFILE,
-			keyfile	 = self.configurables.KEYFILE)
+			keyfile	 = self.configurables.KEYFILE,
+			stereo   = self.configurables.STEREO)
 
 		# Set MESSAGE_RECEIVED callback
 		self.mumble.callbacks.set_callback(
@@ -217,6 +218,7 @@ class Configurables:
 		self.PORT = config["port"]
 		self.CERTFILE = config["certfile"]
 		self.KEYFILE = config["keyfile"]
+		self.STEREO = config["stereo"]
 
 		self.playbackSpeed = 1 # Sanitisation required
 		self.playing = False
