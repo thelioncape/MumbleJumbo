@@ -126,7 +126,7 @@ class MumbleBot:
 
 				# Wait for Mumble to output sound buffer to server
 				while self.mumble.sound_output.get_buffer_size() > 0.5:
-					time.sleep(0.01)
+					time.sleep(1)
 
 				# Song finished
 				self.configurables.playing = False
