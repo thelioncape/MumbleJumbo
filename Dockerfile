@@ -18,3 +18,4 @@ RUN apk add --no-cache git less openssh && \
     /app/bin/pip install --no-cache-dir -r /app/requirements.txt
 
 CMD ["/app/bin/python", "/app/music_bot.py"]
+ENTRYPOINT ["/app/bin/python", "/app/music_bot.py"]
