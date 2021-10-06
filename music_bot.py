@@ -91,14 +91,14 @@ class MumbleBot:
 				# Begin downloading video to stdout pipe to wave_file
 				if "youtube.com" in url or "youtu.be" in url:
 					print("Looks like a YouTube link.")
-					command = 	["python3","youtube-dl",
+					command = 	["youtube-dl",
 								"-f", "bestaudio",
 								url,
 								"--buffer-size", "2M",
 								"-o", "-"]
 				else:
 					print("Doesn't look like a YouTube link.")
-					command = ["python3","youtube-dl",
+					command = ["youtube-dl",
 								url,
 								"--buffer-size", "2M",
 								"-o", "-"]
