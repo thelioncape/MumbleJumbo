@@ -89,11 +89,19 @@ class MumbleBot:
 					self.messages.currentSongMessage += "</p>"
 
 				# Begin downloading video to stdout pipe to wave_file
-				command = 	["youtube-dl",
-							"-f", "bestaudio",
-							url,
-							"--buffer-size", "2M",
-							"-o", "-"]
+				if "youtube.com" in url or "youtu.be" in url:
+					print("Looks like a YouTube link.")
+					command = 	["python3","youtube-dl",
+								"-f", "bestaudio",
+								url,
+								"--buffer-size", "2M",
+								"-o", "-"]
+				else:
+					print("Doesn't look like a YouTube link.")
+					command = ["python3","youtube-dl",
+								url,
+								"--buffer-size", "2M",
+								"-o", "-"]
 				wave_file = sp.Popen(command, stdout=sp.PIPE).stdout
 				# Convert and play wave_file
 				command = 	["ffmpeg",
