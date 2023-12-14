@@ -8,6 +8,7 @@ import time
 import json
 import re
 import sys
+import threading
 
 """
 Main bot class
@@ -23,6 +24,7 @@ class MumbleBot:
 		self.messages = Messages()
 		self.configurables = Configurables(config, self.messages)
 		self.callbacks = Callbacks(self)
+		self.processes = ProcessManager()
 
 	def startBot(self):
 		self.mumble = pymumble.Mumble(
@@ -102,7 +104,9 @@ class MumbleBot:
 								url,
 								"--buffer-size", "2M",
 								"-o", "-"]
-				wave_file = sp.Popen(command, stdout=sp.PIPE).stdout
+				download_proc = sp.Popen(command, stdout=sp.PIPE)
+				wave_file = download_proc.stdout
+				self.processes.track(download_proc)
 				# Convert and play wave_file
 				command = 	["ffmpeg",
 							"-i", "-",
@@ -119,6 +123,7 @@ class MumbleBot:
 								stdout=sp.PIPE,
 								stderr=sp.DEVNULL,
 								stdin=wave_file, bufsize=1024)
+				self.processes.track(sound)
 
 				print("Playing")
 				self.configurables.playing = True
@@ -176,6 +181,7 @@ class Callbacks:
 				self.mumblebot.updateComment()
 
 			elif message == "!skip":
+				self.mumblebot.processes.killall()
 				self.mumblebot.mumble.sound_output.clear_buffer()
 				self.conf.skip = True
 				time.sleep(3)
@@ -192,6 +198,7 @@ class Callbacks:
 
 			elif message == "!stopall":
 				self.conf.queue = []
+				self.mumblebot.processes.killall()
 				self.mumblebot.mumble.sound_output.clear_buffer()
 				self.conf.skip = True
 				time.sleep(1)
@@ -297,6 +304,38 @@ class Messages:
 	def setPlaybackSpeedMessage(self, target):
 		self.playbackSpeedMessage = "<p>Playback speed: {0}x</p>".format(
 				str(target))
+
+
+"""
+Class responsible for tracking long-running processes (yt-dlp, ffmpeg, etc.) used by the bot, so we can kill them if needs be.
+"""
+class ProcessManager:
+	def __init__(self):
+		self.processes = []
+	
+	def _watcher(self, process):
+		# If a process exits normally, remove it from the list.
+		process.wait()
+		self.processes.remove(process)
+	
+	def _kill(self, process):
+		try:
+			process.terminate()
+			process.wait(timeout=5)
+		except TimeoutExpired:
+			print("Process refused to exit. It has been killed.")
+			process.kill()
+
+	def track(self, process):
+		self.processes.append(process)
+		thread = threading.Thread(target=self._watcher, args=(process,))
+		thread.start()
+		return True
+	
+	def killall(self):
+		for p in self.processes:
+			threading.Thread(target=self._kill, args=(p,)).start()
+
 
 bot_instance = MumbleBot()
 bot_instance.startBot()
