@@ -197,6 +197,27 @@ class Callbacks:
 				time.sleep(1)
 				self.mumblebot.updateComment()
 
+			elif message.startswith("!search"):
+				# Return top 5 youtube search results to user
+				try:
+					query = message.split(" ",1)[1]
+
+					self.mumblebot.mumble.users[actor].send_text_message(f"Results for: {query}")
+					print("Running search: " + str(query))
+					command = ["yt-dlp",
+					"--dump-json",
+					"--no-playlist",
+					"--flat-playlist",
+					"--skip-download",
+					f"ytsearch5:{query}"]
+					with sp.Popen(command, stdout=sp.PIPE, shell=False) as p:
+						for line in p.stdout:
+							data = json.loads(line.decode("UTF-8").strip())
+							self.mumblebot.mumble.users[actor].send_text_message(f'{data["title"]} - {data["url"]}')
+
+				except:
+					self.mumblebot.mumble.users[actor].send_text_message("Please specify a search query")
+
 			elif message.startswith("!speed"):
 				try:
 					if self.conf.speedchange(message[7:]):
