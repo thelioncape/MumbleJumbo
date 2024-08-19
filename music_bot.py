@@ -9,6 +9,7 @@ import json
 import re
 import sys
 import threading
+import requests
 
 """
 Main bot class
@@ -25,6 +26,16 @@ class MumbleBot:
 		self.configurables = Configurables(config, self.messages)
 		self.callbacks = Callbacks(self)
 		self.processes = ProcessManager()
+
+	def safeSendMessage(self, actor, message):
+		"""
+		actor should be a pymumble actor object.
+		message should be the long message you want to send.
+		"""
+		maxchars = 4000
+		messageChunks = [message[i:i+maxchars] for i in range(0, len(message), maxchars)]
+		for chunk in messageChunks:
+			actor.send_text_message(chunk)
 
 	def startBot(self):
 		self.mumble = pymumble.Mumble(
@@ -216,6 +227,58 @@ class Callbacks:
 					print(e)
 					self.mumblebot.mumble.users[actor].send_text_message(
 							"Please provide a speed between 0.5 and 2")
+			
+			elif message.startswith("!plexsearch"):
+				if self.conf.plexEnabled:
+					cmd = message.split(" ",1)
+					try:
+						searchquery = cmd[1]
+					except KeyError:
+						self.mumblebot.mumble.users[actor].send_text_message(
+							"Please enter a search query.")
+
+					searchparams = {
+						"limit": 50,
+						"searchTypes": "music",
+						"query": searchquery,
+						"X-Plex-Token": self.conf.plexToken,
+					}
+					searchRequest = requests.get(f"{self.conf.plexEndpoint}/library/search",params=searchparams, headers={'Accept': 'application/json'})
+					searchResults = searchRequest.json()["MediaContainer"]["SearchResult"]
+					for result in searchResults:
+						if result["Metadata"]["type"] != "track":
+							continue
+						# TODO:
+						# Title, Albumn, Artist, Confidence
+
+						self.mumblebot.safeSendMessage(self.mumblebot.mumble.users[actor], f"{result['Metadata']['title']} - {result['Metadata']['ratingKey']}")
+
+
+				else:
+					self.mumblebot.mumble.users[actor].send_text_message(
+							"Plex integration is disabled. Please contact the bot owner to enable it.")
+			
+			elif message.startswith("!plexplay"):
+				cmd = message.split(" ",1)
+				try:
+					trackID = cmd[1]
+				except KeyError:
+						self.mumblebot.mumble.users[actor].send_text_message(
+							"Usage: !plexplay 1234. Use !plexsearch to get a Track ID.")
+				
+				try:
+					int(trackID)
+				except:
+					self.mumblebot.mumble.users[actor].send_text_message(
+							"Track ID should be an integer.")
+				
+				mediaInfo = requests.get(f"{self.conf.plexEndpoint}/library/metadata/{str(trackID)}", params={"X-Plex-Token": self.conf.plexToken}, headers={'Accept': 'application/json'}).json()
+
+				path = self.conf.plexEndpoint + str(mediaInfo["MediaContainer"]["Metadata"][0]["Media"][0]["Part"][0]["key"]) + f"?X-Plex-Token={self.conf.plexToken}"
+				self.conf.queue.append(path)
+				self.mumblebot.mumble.users[actor].send_text_message("Playing: " + mediaInfo["MediaContainer"]["Metadata"][0]["title"])
+				
+
 
 	def died(self): self.conf.serverDied = True
 
@@ -242,6 +305,10 @@ class Configurables:
 
 		self.queue = []
 		self.serverDied = False
+
+		self.plexEnabled = config["plex_enabled"]
+		self.plexEndpoint = config["plex_endpoint"]
+		self.plexToken = config["plex_token"]
 
 	# Updates the queue of songs to play and the corresponding message
 	# in the Messages object
